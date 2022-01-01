@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  peer1-init:
+    image: ethereum/client-go
+    command: --datadir ./data init /config/genesis.json
+    volumes:
+      - ./config:/config
+      - ./data/peer1:/data
+    networks:
+      - private_chain
+  peer2-init:
+    image: ethereum/client-go
+    command: --datadir ./data init /config/genesis.json
+    volumes:
+      - ./config:/config
+      - ./data/peer2:/data
+    networks:
+      - private_chain
+  peer1:
+    image: ethereum/client-go
+    command: --networkid "999" --nodiscover --datadir "./data" --syncmode 'full' --port 30303 --http --http.addr '0.0.0.0' --http.port 8545 --http.corsdomain '*' --http.vhosts '*' --ws --ws.addr "0.0.0.0" --ws.origins "*" --allow-insecure-unlock
+    volumes:
+      - ./config:/config
+      - ./data/peer1:/data
+    networks:
+      - private_chain
+  peer2:
+    image: ethereum/client-go
+    command: --networkid "999" --nodiscover --datadir "./data" --syncmode 'full' --port 30303 --http --http.addr '0.0.0.0' --http.port 8545 --http.corsdomain '*' --http.vhosts '*' --ws --ws.addr "0.0.0.0" --ws.origins "*" --allow-insecure-unlock
+    volumes:
+      - ./config:/config
+      - ./data/peer2:/data
+    networks:
+      - private_chain
+networks:
+  private_chain:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.27.0.0/24
